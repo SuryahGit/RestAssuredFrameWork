@@ -103,7 +103,7 @@ pipeline
         
         stage("Deploy to PROD"){
             steps{
-                echo("deploy to PROD")
+                echo("deploy to PROD done")
             }
         }
     }

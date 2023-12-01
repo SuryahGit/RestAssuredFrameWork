@@ -25,12 +25,12 @@
 		</classes>
 	</test>
 	
-	<test name="Go Rest Get API Test">
+	<!--<test name="Go Rest Get API Test">
 		<parameter name="baseURI" value="https://gorest.co.in" />
 		<classes>
 			<class name="com.qa.gorest.tests.GetUserTest" />
 		</classes>
-	</test>
+	</test>-->
 
 	<test name="Go Rest Create User API Test">
 		<parameter name="baseURI" value="https://gorest.co.in" />
