@@ -36,7 +36,7 @@ pipeline
         stage('Regression API Automation Test') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/naveenanimation20/June2023RestAssuredFramework.git'
+                    git 'https://github.com/SuryahGit/RestAssuredFrameWork.git'
                     bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml"
                     
                 }
@@ -59,7 +59,7 @@ pipeline
         }
         
         
-        stage('Publish Extent Report'){
+        stage('Publish Regression Extent Report'){
             steps{
                      publishHTML([allowMissing: false,
                                   alwaysLinkToLastBuild: false, 
@@ -81,13 +81,26 @@ pipeline
         stage('Sanity Automation Test') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/naveenanimation20/June2023RestAssuredFramework.git'
+                    git 'https://github.com/SuryahGit/RestAssuredFrameWork.git'
                     bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_sanity.xml"
                     
                 }
             }
         }
         
+        stage('Publish Sanity Allure Reports') {
+           steps {
+                script {
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: '/allure-results']]
+                    ])
+                }
+            }
+        }
         
          stage('Publish Sanity Extent Report'){
             steps{
