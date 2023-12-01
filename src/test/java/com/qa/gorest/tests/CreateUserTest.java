@@ -61,11 +61,12 @@ public class CreateUserTest extends BaseTest {
 		Users users = new Users(name, StringUtils.getRandomEmailId(), gender, status);
 		Integer userId = restClient.post(GOREST_ENDPOINT, "JSON", users, true, true).then().log().all().assertThat()
 				.statusCode(APIHttpStatus.CREATED_201.getCode()).extract().path("id");
-		System.out.println("User ID is " + userId);
+		System.out.println("User ID is :" + userId);
 
 		// 2. Get
 		RestClient restClientGet = new RestClient(prop, baseURI);
 		restClientGet.get(GOREST_ENDPOINT + "/" + userId, true, true).then().log().all().assertThat()
 				.statusCode(APIHttpStatus.OK_200.getCode()).and().assertThat().body("id", equalTo(userId));
+		System.out.println("Done");
 	}
 }
