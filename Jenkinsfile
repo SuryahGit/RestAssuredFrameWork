@@ -64,9 +64,9 @@ pipeline
                      publishHTML([allowMissing: false,
                                   alwaysLinkToLastBuild: false, 
                                   keepAll: false, 
-                                  reportDir: 'reports', 
+                                  reportDir: 'target', 
                                   reportFiles: 'APIExecutionReport.html', 
-                                  reportName: 'API HTML Extent Report', 
+                                  reportName: 'API Regression HTML Extent Report', 
                                   reportTitles: ''])
             }
         }
@@ -88,26 +88,12 @@ pipeline
             }
         }
         
-        stage('Publish Sanity Allure Reports') {
-           steps {
-                script {
-                    allure([
-                        includeProperties: false,
-                        jdk: '',
-                        properties: [],
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: '/allure-results']]
-                    ])
-                }
-            }
-        }
-        
-         stage('Publish Sanity Extent Report'){
+          stage('Publish Sanity Extent Report'){
             steps{
                      publishHTML([allowMissing: false,
                                   alwaysLinkToLastBuild: false, 
                                   keepAll: false, 
-                                  reportDir: 'reports', 
+                                  reportDir: 'target', 
                                   reportFiles: 'APIExecutionReport.html', 
                                   reportName: 'API HTML Sanity Extent Report', 
                                   reportTitles: ''])
