@@ -13,7 +13,7 @@ pipeline
             steps
             {
                  git 'https://github.com/jglick/simple-maven-project-with-tests.git'
-                 bat "mvn -Dmaven.test.failure.ignore=true clean package"
+                 sh "mvn -Dmaven.test.failure.ignore=true clean package"
             }
             post 
             {
@@ -37,50 +37,36 @@ pipeline
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     git 'https://github.com/SuryahGit/RestAssuredFrameWork.git'
-                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml"
+                    sh "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml"
                     
                 }
             }
         }
                 
      
-       stage('Clean Up Old Reports') {
-    steps {
-        script {
-            // Replace 'path/to/old/reports' with the actual path of your old Allure reports
-            def oldReportsPath = 'path/to/old/reports'
-
-            // Remove old reports if the directory exists
-            if (fileExists(oldReportsPath)) {
-                sh "rm -rf ${oldReportsPath}"
+        stage('Publish Allure Reports') {
+           steps {
+                script {
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: '/allure-results']]
+                    ])
+                }
             }
         }
-    }
-}
-
-stage('Publish Allure Reports') {
-    steps {
-        script {
-            allure([
-                includeProperties: false,
-                jdk: '',
-                properties: [],
-                reportBuildPolicy: 'ALWAYS',
-                results: [[path: '/allure-results']]
-            ])
-        }
-    }
-}
         
         
-        stage('Publish Regression Extent Report'){
+        stage('Publish Extent Report'){
             steps{
                      publishHTML([allowMissing: false,
                                   alwaysLinkToLastBuild: false, 
                                   keepAll: false, 
-                                  reportDir: 'target', 
+                                  reportDir: 'reports', 
                                   reportFiles: 'APIExecutionReport.html', 
-                                  reportName: 'API Regression HTML Extent Report', 
+                                  reportName: 'API HTML Extent Report', 
                                   reportTitles: ''])
             }
         }
@@ -96,20 +82,21 @@ stage('Publish Allure Reports') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     git 'https://github.com/SuryahGit/RestAssuredFrameWork.git'
-                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_sanity.xml"
+                    sh "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_sanity.xml"
                     
                 }
             }
         }
         
-          stage('Publish Sanity Extent Report'){
+        
+         stage('Publish Sanity Extent Report'){
             steps{
                      publishHTML([allowMissing: false,
                                   alwaysLinkToLastBuild: false, 
                                   keepAll: false, 
-                                  reportDir: 'target', 
+                                  reportDir: 'reports', 
                                   reportFiles: 'APIExecutionReport.html', 
-                                  reportName: 'API HTML Sanity Extent Report', 
+                                  reportName: 'API Sanity HTML Extent Report', 
                                   reportTitles: ''])
             }
         }
@@ -117,7 +104,7 @@ stage('Publish Allure Reports') {
         
         stage("Deploy to PROD"){
             steps{
-                echo("deploy to PROD done")
+                echo("deploy to PROD")
             }
         }
     }
