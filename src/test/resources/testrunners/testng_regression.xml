@@ -18,14 +18,14 @@
 	</test>
 -->
 
-	<test name="GO Rest API Schema validation Test">
+	<!--<test name="GO Rest API Schema validation Test">
 		<parameter name="baseURI" value="https://gorest.co.in" />
 		<classes>
 			<class name="com.qa.gorest.tests.APISchemaValidationTest" />
 		</classes>
-	</test>
+	</test>-->
 	
-	<!--<test name="Go Rest Get API Test">
+	<test name="Go Rest Get API Test">
 		<parameter name="baseURI" value="https://gorest.co.in" />
 		<classes>
 			<class name="com.qa.gorest.tests.GetUserTest" />
@@ -37,7 +37,7 @@
 		<classes>
 			<class name="com.qa.gorest.tests.CreateUserTest" />
 		</classes>
-	</test>-->
+	</test>
 
 	<!--<test name="Req Res API Test">
 		<parameter name="baseURI" value="https://reqres.in" />
