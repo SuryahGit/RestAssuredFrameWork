@@ -36,7 +36,7 @@ pipeline
         stage('Regression API Automation Test') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/naveenanimation20/June2023RestAssuredFramework.git'
+                    git 'https://github.com/SuryahGit/RestAssuredFrameWork.git'
                     sh "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml"
                     
                 }
