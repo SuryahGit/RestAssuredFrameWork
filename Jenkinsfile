@@ -80,13 +80,5 @@ pipeline
                                   reportTitles: ''])
             }
         }
-        
-    }
-	
-	  stage("Deploy to PROD"){
-            steps{
-                echo("deploy to PROD")
-            }
-        }
-    }
+      }
 }
