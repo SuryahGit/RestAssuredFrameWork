@@ -5,6 +5,13 @@ pipeline
     tools{
     	maven 'maven'
         }
+        
+    environment{
+   
+        BUILD_NUMBER = "${BUILD_NUMBER}"
+   
+    }
+    
 
     stages 
     {
@@ -24,7 +31,7 @@ pipeline
                 }
             }
         }
-        
+
         
         
         stage("Deploy to QA"){
@@ -32,80 +39,51 @@ pipeline
                 echo("deploy to qa done")
             }
         }
+             
+             
                 
-        stage('Regression API Automation Test') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/SuryahGit/RestAssuredFrameWork.git'
-                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml"
-                    
-                }
-            }
-        }
                 
-     
-        stage('Publish Allure Reports') {
-           steps {
-                script {
-                    allure([
-                        includeProperties: false,
-                        jdk: '',
-                        properties: [],
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: '/allure-results']]
-                    ])
-                }
+      stage('Run Docker Image with Regression Tests') {
+    steps {
+        script {
+            def suiteXmlFilePath = 'src/test/resources/testrunners/testng_regression.xml'
+            def dockerCommand = """
+                docker run --name apitesting${BUILD_NUMBER} \
+                -v "${WORKSPACE}/reports:/app/reports" \
+                suryahdocker/apitest:latest \
+                /bin/bash -c "mvn test -Dsurefire.suiteXmlFiles=${suiteXmlFilePath}"
+            """
+            
+            def exitCode = bat(script: dockerCommand, returnStatus: true)
+            
+            if (exitCode != 0) {
+                currentBuild.result = 'FAILURE'
             }
+            bat "docker start apitesting${BUILD_NUMBER}"
+            bat "docker cp apitesting${BUILD_NUMBER}:/app/target/APIExecutionReport.html ${WORKSPACE}/target"
+            bat "docker rm -f apitesting${BUILD_NUMBER}"
         }
-        
-        
-        stage('Publish Extent Report'){
+    }
+}
+
+
+
+		
+		stage('Publish Regression Extent Report'){
             steps{
                      publishHTML([allowMissing: false,
                                   alwaysLinkToLastBuild: false, 
                                   keepAll: false, 
-                                  reportDir: 'reports', 
+                                  reportDir: 'target', 
                                   reportFiles: 'APIExecutionReport.html', 
-                                  reportName: 'API HTML Extent Report', 
+                                  reportName: 'API HTML Regression Extent Report', 
                                   reportTitles: ''])
             }
         }
         
         
-         stage("Deploy to STAGE"){
-            steps{
-                echo("deploy to STAGE done")
-            }
-        }
-        
-        stage('Sanity Automation Test') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/SuryahGit/RestAssuredFrameWork.git'
-                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_sanity.xml"
-                    
-                }
-            }
-        }
-        
-        
-         stage('Publish Sanity Extent Report'){
-            steps{
-                     publishHTML([allowMissing: false,
-                                  alwaysLinkToLastBuild: false, 
-                                  keepAll: false, 
-                                  reportDir: 'reports', 
-                                  reportFiles: 'APIExecutionReport.html', 
-                                  reportName: 'API Sanity HTML Extent Report', 
-                                  reportTitles: ''])
-            }
-        }
-        
-        
-        stage("Deploy to PROD"){
-            steps{
-                echo("deploy to PROD")
-            }
-        }
+         
+
+         
     }
 }
